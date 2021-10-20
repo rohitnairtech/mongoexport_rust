@@ -1,4 +1,5 @@
 use std::process::Command;
+use std::fs;
 
 pub fn remove_whitespace(s: &str) -> String {
     s.chars().filter(|c| !c.is_whitespace()).collect()
@@ -23,6 +24,9 @@ pub fn export(database: &str, query: &str, output: &str) -> () {
 
     let collectionlist = stdout.split(',');
 
+    fs::create_dir_all(format!("./{}", &output))
+        .expect("failed to create directory");
+
     for collection in collectionlist {
         println!("Going through collection: {}", &collection);
         let filename = format!("./{}/{}.json", &output, &collection);
@@ -36,10 +40,10 @@ pub fn export(database: &str, query: &str, output: &str) -> () {
             .arg("--query")
             .arg(&query)
             .arg("--out")
-            .arg(&output)
+            .arg(&filename)
             .arg("--jsonArray")
             .status()
-            .expect("mongo list collection command failed to start");
+            .expect("mongo export collection command failed to start");
         
         println!("{}", &exportcmd);
     }
