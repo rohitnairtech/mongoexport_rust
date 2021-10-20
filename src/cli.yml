@@ -1,0 +1,35 @@
+about: >-
+  Performs a mongodump with a query parameter and then mongorestore with the
+  given files
+author: rohitnairtech <puthenrohit@gmail.com>
+name: Mongo export extended
+args:
+  - database:
+      short: d
+      long: db
+      help: Specifies the database name to run the operation on
+      required: true
+      takes_value: true
+  - uri:
+      short: u
+      help: URL/Hostname used while connecting to external servers
+      takes_value: true
+  - query:
+      short: q
+      help: Specifies the query to export data from the given database
+      takes_value: true
+  - output:
+      short: o
+      help: Sets the output directory
+      takes_value: true
+  - input:
+      short: i
+      help: Specifies the query to export data from the given database
+      takes_value: true
+  - operation:
+      long: op
+      help: Specifies the type of operation (export/import)
+      required: true
+      takes_value: true
+      default_value: export
+version: '1.0'
