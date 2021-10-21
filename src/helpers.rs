@@ -5,6 +5,10 @@ pub fn remove_whitespace(s: &str) -> String {
     s.chars().filter(|c| !c.is_whitespace()).collect()
 }
 
+fn path_exists(path: &str) -> bool {
+    fs::metadata(path).is_ok()
+}
+
 pub fn export(database: &str, query: &str, output: &str) -> () {
     println!("exporting {} using query {} to location {}", database, query, output);
     
@@ -52,6 +56,49 @@ pub fn export(database: &str, query: &str, output: &str) -> () {
 
 }
 
-// fn import() {
 
-// }
+pub fn import(database: &str, input: &str ) -> () {
+    let mut filepath = format!("./{}",&input); 
+    let fileexists = path_exists(&filepath);
+    if fileexists {
+        let paths = fs::read_dir(filepath).unwrap();
+        for path in paths {
+            filepath = path.unwrap().path().display().to_string();
+            if filepath.contains(".json"){
+                println!("Processing: {}", filepath);
+                let filedir_split = filepath.split("/");
+                let mut collection: &str = ""; 
+                for part in filedir_split {
+                    if part.contains(".json") {
+                        println!("fname {}", &part);
+                        let subpart = part.split(".");
+                        for sub in subpart {
+                            if !sub.contains("json") {
+                                collection = &sub;
+                            }
+                        }
+                    }
+                }
+                println!("coll: {}", &collection);
+                let importcmd = Command::new("mongoimport")
+                    .arg("-d")
+                    .arg(&database)
+                    .arg("-c")
+                    .arg(&collection)
+                    .arg("--file")
+                    .arg(&filepath)
+                    .arg("--jsonArray")
+                    .status()
+                    .expect("mongo export collection command failed to start");
+                
+                println!("{}", &importcmd);
+            }
+            else{
+                println!("not a json file");
+            }
+        }
+    }
+    else{
+        println!("file doesnt exist");
+    }
+}

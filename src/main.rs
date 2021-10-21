@@ -3,7 +3,7 @@ extern crate clap;
 use clap::App;
 
 mod helpers;
-use helpers::{export, remove_whitespace};
+use helpers::{export, import, remove_whitespace};
 
 fn main() {
     let yaml = load_yaml!("cli.yml");
@@ -14,11 +14,13 @@ fn main() {
 
     if operation == "export" {
         let query = remove_whitespace(matches.value_of("query").unwrap());
-        let output = remove_whitespace(matches.value_of("output").unwrap());
+        let output = remove_whitespace(matches.value_of("output").unwrap_or("output"));
         export(&database, &query, &output);
     }
     else{
-        println!("import fn hai")
+        println!("import fn hai");
+        let input = remove_whitespace(matches.value_of("input").unwrap_or("output"));
+        import(&database, &input);
     }
 
 }
